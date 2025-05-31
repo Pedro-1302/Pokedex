@@ -12,6 +12,7 @@ struct Pokemon {
     let url: String
 }
 
+// swiftlint:disable line_length
 extension Pokemon {
     static func getMock() -> Pokemon {
         let id = 94
@@ -23,3 +24,4 @@ extension Pokemon {
         )
     }
 }
+// swiftlint:enable line_length
