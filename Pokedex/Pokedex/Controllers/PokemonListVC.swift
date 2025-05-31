@@ -31,7 +31,8 @@ final class PokemonListVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor =  .red
+        view = tableView
+        view.backgroundColor = .red
 
         service.fetchPokemonList { result in
             DispatchQueue.main.async {
@@ -52,7 +53,7 @@ extension PokemonListVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 10
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return UITableViewCell()
     }
