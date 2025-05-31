@@ -19,6 +19,19 @@ struct PokemonResponse: Codable {
     let url: String
 }
 
+protocol PokemonServiceProtocol {
+    func fetchPokemonList()
+}
+
+final class PokemonService: PokemonServiceProtocol {
+    private let baseUrl: String = "https://pokeapi.co/api/v2/pokemon"
+    private let limitPerPage: Int = 20
+
+    func fetchPokemonList() {
+        let url = baseUrl + "?limit=\(limitPerPage)"
+    }
+}
+
 final class ViewController: UIViewController {
 
     override func viewDidLoad() {
