@@ -36,6 +36,13 @@ final class PokemonCellView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func configure(_ pokemon: Pokemon) {
+        loadImage(from: pokemon.imageUrl)
+    }
+}
+
+// MARK: - Private Methods
+extension PokemonCellView {
     private func setupLayout() {
         setupContainerView()
         setupImageView()
@@ -62,12 +69,6 @@ final class PokemonCellView: UIView {
         ])
     }
 
-    func configure(_ pokemon: Pokemon) {
-        loadImage(from: pokemon.imageUrl)
-    }
-}
-
-extension PokemonCellView {
     private func loadImage(from urlString: String) {
         if let url = URL(string: urlString) {
             imageView.kf.setImage(with: url)
