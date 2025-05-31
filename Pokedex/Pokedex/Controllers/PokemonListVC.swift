@@ -9,6 +9,16 @@ import UIKit
 
 final class PokemonListVC: UIViewController {
     private let service: PokemonServiceProtocol
+    private var pokemonList: [Pokemon] = []
+
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
+        return tableView
+    }()
 
     init(service: PokemonServiceProtocol = PokemonService()) {
         self.service = service
@@ -33,5 +43,17 @@ final class PokemonListVC: UIViewController {
                 }
             }
         }
+    }
+}
+
+extension PokemonListVC: UITableViewDelegate { }
+
+extension PokemonListVC: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return UITableViewCell()
     }
 }
