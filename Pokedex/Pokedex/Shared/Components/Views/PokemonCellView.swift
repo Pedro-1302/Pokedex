@@ -24,8 +24,35 @@ final class PokemonCellView: UIView {
         return imageView
     }()
 
+    private let verticalStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        return stackView
+    }()
+
+    private let nameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.textColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        return label
+    }()
+
+    private let dexIdLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14)
+        label.textColor = .darkGray
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        return label
+    }()
+
     private let imagePadding: CGFloat = 16
     private let imagaSize: CGFloat = 120
+    private let stackViewPadding: CGFloat = 16
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,6 +64,8 @@ final class PokemonCellView: UIView {
     }
 
     func configure(_ pokemon: Pokemon) {
+        nameLabel.text = pokemon.name
+        dexIdLabel.text = pokemon.id.getPokemonDexId()
         loadImage(from: pokemon.imageUrl)
     }
 }
@@ -46,6 +75,7 @@ extension PokemonCellView {
     private func setupLayout() {
         setupContainerView()
         setupImageView()
+        setupVerticalStackView()
     }
 
     private func setupContainerView() {
@@ -66,6 +96,18 @@ extension PokemonCellView {
             imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -imagePadding),
             imageView.widthAnchor.constraint(equalToConstant: imagaSize),
             imageView.heightAnchor.constraint(equalToConstant: imagaSize)
+        ])
+    }
+
+    private func setupVerticalStackView() {
+        containerView.addSubview(verticalStackView)
+        verticalStackView.addArrangedSubview(nameLabel)
+        verticalStackView.addArrangedSubview(dexIdLabel)
+        NSLayoutConstraint.activate([
+            verticalStackView.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: stackViewPadding),
+            verticalStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor,
+                                                        constant: -stackViewPadding),
+            verticalStackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
         ])
     }
 
