@@ -10,10 +10,21 @@ import UIKit
 final class PokemonCellView: UIView {
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .red
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 12
+        return imageView
+    }()
+
+    private let imagePadding: CGFloat = 16
+    private let imagaSize: CGFloat = 120
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,6 +36,11 @@ final class PokemonCellView: UIView {
     }
 
     private func setupLayout() {
+        setupContainerView()
+        setupImageView()
+    }
+
+    private func setupContainerView() {
         addSubview(containerView)
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: topAnchor),
@@ -33,4 +49,17 @@ final class PokemonCellView: UIView {
             containerView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
+
+    private func setupImageView() {
+        containerView.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: imagePadding),
+            imageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: imagePadding),
+            imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -imagePadding),
+            imageView.widthAnchor.constraint(equalToConstant: imagaSize),
+            imageView.heightAnchor.constraint(equalToConstant: imagaSize)
+        ])
+    }
+
+    func configure(_ pokemon: Pokemon) { }
 }
