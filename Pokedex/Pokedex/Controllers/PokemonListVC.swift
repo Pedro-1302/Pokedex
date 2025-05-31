@@ -66,6 +66,8 @@ extension PokemonListVC: UITableViewDataSource {
             return UITableViewCell()
         }
 
+        let pokemon = pokemonList[indexPath.row]
+        cell.configure(pokemon)
         return cell
     }
 }

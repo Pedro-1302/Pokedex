@@ -33,4 +33,8 @@ final class PokemonTableViewCell: UITableViewCell {
             pokemonCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
+
+    func configure(_ pokemon: Pokemon) {
+        pokemonCell.configure(pokemon)
+    }
 }

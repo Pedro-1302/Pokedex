@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class PokemonCellView: UIView {
     private let containerView: UIView = {
@@ -61,5 +62,18 @@ final class PokemonCellView: UIView {
         ])
     }
 
-    func configure(_ pokemon: Pokemon) { }
+    func configure(_ pokemon: Pokemon) {
+        loadImage(from: pokemon.imageUrl)
+    }
+}
+
+extension PokemonCellView {
+    private func loadImage(from urlString: String) {
+        if let url = URL(string: urlString) {
+            imageView.kf.setImage(with: url)
+        } else {
+            logger.error("Error loading image URL.")
+            imageView.image = UIImage(named: "placeholder")
+        }
+    }
 }
