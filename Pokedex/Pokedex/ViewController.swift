@@ -7,6 +7,18 @@
 
 import UIKit
 
+struct PokemonListResponse: Codable {
+    let count: Int
+    let next: String
+    let previous: String
+    let results: [PokemonResponse]
+}
+
+struct PokemonResponse: Codable {
+    let name: String
+    let url: String
+}
+
 final class ViewController: UIViewController {
 
     override func viewDidLoad() {
