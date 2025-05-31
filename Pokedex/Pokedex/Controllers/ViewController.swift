@@ -7,31 +7,6 @@
 
 import UIKit
 
-struct PokemonListResponse: Codable {
-    let count: Int
-    let next: String
-    let previous: String
-    let results: [PokemonResponse]
-}
-
-struct PokemonResponse: Codable {
-    let name: String
-    let url: String
-}
-
-protocol PokemonServiceProtocol {
-    func fetchPokemonList()
-}
-
-final class PokemonService: PokemonServiceProtocol {
-    private let baseUrl: String = "https://pokeapi.co/api/v2/pokemon"
-    private let limitPerPage: Int = 20
-
-    func fetchPokemonList() {
-        let url = baseUrl + "?limit=\(limitPerPage)"
-    }
-}
-
 final class ViewController: UIViewController {
     private let service: PokemonServiceProtocol
 
@@ -46,7 +21,17 @@ final class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor =  .red
+
+        service.fetchPokemonList { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    logger.debug("Pokemons: \(response.results)")
+                case .failure(let error):
+                    logger.error("An error occurred: \(error)")
+                }
+            }
+        }
     }
 }
