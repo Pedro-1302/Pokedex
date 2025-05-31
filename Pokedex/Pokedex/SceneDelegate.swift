@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let windowScene = scene as? UIWindowScene else { return }
-        let viewController = ViewController()
+        let viewController = PokemonListVC()
         let navController = UINavigationController(rootViewController: viewController)
 
         window = UIWindow(windowScene: windowScene)

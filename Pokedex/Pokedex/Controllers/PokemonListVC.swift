@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  PokemonListVC.swift
 //  Pokedex
 //
 //  Created by Pedro Franco on 31/05/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class ViewController: UIViewController {
+final class PokemonListVC: UIViewController {
     private let service: PokemonServiceProtocol
 
     init(service: PokemonServiceProtocol = PokemonService()) {
