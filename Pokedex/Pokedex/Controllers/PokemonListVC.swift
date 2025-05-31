@@ -17,6 +17,7 @@ final class PokemonListVC: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
+        tableView.register(PokemonTableViewCell.self, forCellReuseIdentifier: "PokemonCell")
         return tableView
     }()
 
@@ -32,16 +33,18 @@ final class PokemonListVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view = tableView
-        view.backgroundColor = .red
 
-        service.fetchPokemonList { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    logger.debug("Pokemons: \(response.results)")
-                case .failure(let error):
-                    logger.error("An error occurred: \(error)")
+        service.fetchPokemonList { [weak self] result in
+            switch result {
+            case .success(let response):
+                let pokemons = response.results.map { $0.toPokemon() }
+                logger.debug("Pokemons: \(pokemons)")
+                DispatchQueue.main.async {
+                    self?.pokemonList = pokemons
+                    self?.tableView.reloadData()
                 }
+            case .failure(let error):
+                logger.error("An error occurred: \(error)")
             }
         }
     }
@@ -51,10 +54,18 @@ extension PokemonListVC: UITableViewDelegate { }
 
 extension PokemonListVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return pokemonList.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "PokemonCell",
+            for: indexPath
+        ) as? PokemonTableViewCell else {
+            logger.error("Failed to dequeue PokemonTableViewCell.")
+            return UITableViewCell()
+        }
+
+        return cell
     }
 }
