@@ -32,8 +32,8 @@ final class PokemonListVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureNavigationBarTitle()
         view = tableView
-
         service.fetchPokemonList { [weak self] result in
             switch result {
             case .success(let response):
@@ -47,6 +47,13 @@ final class PokemonListVC: UIViewController {
                 logger.error("An error occurred: \(error)")
             }
         }
+    }
+}
+
+extension PokemonListVC {
+    private func configureNavigationBarTitle() {
+        navigationItem.title = "Pokedex"
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
 }
 
