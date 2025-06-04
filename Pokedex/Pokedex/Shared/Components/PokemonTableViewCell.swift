@@ -11,7 +11,6 @@ final class PokemonTableViewCell: UITableViewCell {
     private let pokemonCell: PokemonCellView = {
         let cell = PokemonCellView()
         cell.translatesAutoresizingMaskIntoConstraints = false
-        cell.backgroundColor = .red
         return cell
     }()
 
