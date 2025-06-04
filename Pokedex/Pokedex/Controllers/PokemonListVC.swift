@@ -34,14 +34,17 @@ final class PokemonListVC: UIViewController {
         super.viewDidLoad()
         configureNavigationBarTitle()
         view = tableView
+
+    }
+
+    private func fetchPokemons() {
         service.fetchPokemonList { [weak self] result in
+            guard let self else { return }
             switch result {
-            case .success(let response):
-                let pokemons = response.results.map { $0.toPokemon() }
-                logger.debug("Pokemons: \(pokemons)")
+            case .success(let pokemons):
                 DispatchQueue.main.async {
-                    self?.pokemonList = pokemons
-                    self?.tableView.reloadData()
+                    self.pokemonList.append(contentsOf: pokemons)
+                    self.tableView.reloadData()
                 }
             case .failure(let error):
                 logger.error("An error occurred: \(error)")
@@ -57,7 +60,16 @@ extension PokemonListVC {
     }
 }
 
-extension PokemonListVC: UITableViewDelegate { }
+extension PokemonListVC: UITableViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        if offsetY > contentHeight - height - 20 {
+            fetchPokemons()
+        }
+    }
+}
 
 extension PokemonListVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
