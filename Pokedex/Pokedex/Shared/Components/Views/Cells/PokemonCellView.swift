@@ -87,10 +87,10 @@ extension PokemonCellView {
     private func setupContainerView() {
         addSubview(containerView)
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            containerView.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            containerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
         ])
     }
 
