@@ -12,7 +12,7 @@ final class PokemonCellView: UIView {
     private let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = .secondarySystemBackground
         view.layer.cornerRadius = 16
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.3
@@ -41,7 +41,7 @@ final class PokemonCellView: UIView {
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .bold)
-        label.textColor = .black
+        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         return label
@@ -50,7 +50,7 @@ final class PokemonCellView: UIView {
     private let dexIdLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-        label.textColor = .darkGray
+        label.textColor = .systemGray
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         return label
