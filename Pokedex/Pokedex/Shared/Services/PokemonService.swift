@@ -9,6 +9,8 @@ import Foundation
 
 protocol PokemonServiceProtocol {
     func fetchPokemonList(completion: @escaping (Result<[Pokemon], Error>) -> Void)
+    func fetchPokemon(pokemonId: Int,
+                      completion: @escaping (Result<Pokemon, Error>) -> Void)
 }
 
 final class PokemonService: PokemonServiceProtocol {
@@ -33,7 +35,7 @@ final class PokemonService: PokemonServiceProtocol {
         URLSession.shared.dataTask(with: urlRequest) { data, _, error in
             defer { self.isFetching = false }
 
-            if let error = error {
+            if let error {
                 completion(.failure(error))
                 return
             }
@@ -49,6 +51,38 @@ final class PokemonService: PokemonServiceProtocol {
                 self.nextPageUrl = decoded.next
                 let pokemons = decoded.results.map { $0.toPokemon() }
                 completion(.success(pokemons))
+            } catch {
+                logger.error("Error parsing data. \(error)")
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
+    func fetchPokemon(pokemonId: Int,
+                      completion: @escaping (Result<Pokemon, any Error>) -> Void) {
+        let urlString = baseUrl + "\(pokemonId)"
+
+        guard let urlRequest = URL(string: urlString) else {
+            logger.error("Error creating URL.")
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
+
+        URLSession.shared.dataTask(with: urlRequest) { data, _, error in
+            if let error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data else {
+                logger.error("Failed to get data. \(error)")
+                completion(.failure(NSError(domain: "No data returned", code: 0)))
+                return
+            }
+
+            do {
+                let pokemon = try JSONDecoder().decode(Pokemon.self, from: data)
+                completion(.success(pokemon))
             } catch {
                 logger.error("Error parsing data. \(error)")
                 completion(.failure(error))

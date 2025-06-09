@@ -5,7 +5,7 @@
 //  Created by Pedro Franco on 31/05/25.
 //
 
-struct Pokemon {
+struct Pokemon: Codable {
     let id: Int
     let name: String
     let imageUrl: String
