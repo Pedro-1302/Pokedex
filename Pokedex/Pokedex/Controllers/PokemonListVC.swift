@@ -69,6 +69,12 @@ extension PokemonListVC: UITableViewDelegate {
             fetchPokemons()
         }
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedPokemon = pokemonList[indexPath.row]
+        let detailVC = PokemonDetailVC(pokemonId: selectedPokemon.id)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
 }
 
 extension PokemonListVC: UITableViewDataSource {
