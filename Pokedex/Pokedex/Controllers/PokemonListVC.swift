@@ -34,7 +34,6 @@ final class PokemonListVC: UIViewController {
         super.viewDidLoad()
         configureNavigationBarTitle()
         view = tableView
-
     }
 
     private func fetchPokemons() {

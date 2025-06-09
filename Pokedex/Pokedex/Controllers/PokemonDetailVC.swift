@@ -7,12 +7,17 @@
 
 import UIKit
 
-class PokemonDetailVC: UIViewController {
+final class PokemonDetailVC: UIViewController {
+    private let service: PokemonServiceProtocol
 
     let pokemonId: Int
 
-    init(pokemonId: Int) {
+    init(
+        pokemonId: Int,
+        service: PokemonServiceProtocol = PokemonService()
+    ) {
         self.pokemonId = pokemonId
+        self.service = service
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -25,4 +30,12 @@ class PokemonDetailVC: UIViewController {
         self.view.backgroundColor = .red
     }
 
+}
+
+extension PokemonDetailVC {
+    private func fetchPokemon() {
+        service.fetchPokemonDetail(pokemonId: pokemonId) { [weak self] result in
+            guard let self else { return }
+        }
+    }
 }
