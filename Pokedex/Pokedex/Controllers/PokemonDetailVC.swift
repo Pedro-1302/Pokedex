@@ -33,9 +33,5 @@ final class PokemonDetailVC: UIViewController {
 }
 
 extension PokemonDetailVC {
-    private func fetchPokemon() {
-        service.fetchPokemonDetail(pokemonId: pokemonId) { [weak self] result in
-            guard let self else { return }
-        }
-    }
+    private func fetchPokemon() { }
 }
