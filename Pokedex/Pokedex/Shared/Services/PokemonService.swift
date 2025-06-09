@@ -9,7 +9,7 @@ import Foundation
 
 protocol PokemonServiceProtocol {
     func fetchPokemonList(completion: @escaping (Result<[Pokemon], Error>) -> Void)
-    func fetchPokemon(pokemonId: Int,
+    func fetchPokemonDetail(pokemonId: Int,
                       completion: @escaping (Result<Pokemon, Error>) -> Void)
 }
 
@@ -58,7 +58,7 @@ final class PokemonService: PokemonServiceProtocol {
         }.resume()
     }
 
-    func fetchPokemon(pokemonId: Int,
+    func fetchPokemonDetail(pokemonId: Int,
                       completion: @escaping (Result<Pokemon, any Error>) -> Void) {
         let urlString = baseUrl + "\(pokemonId)"
 
