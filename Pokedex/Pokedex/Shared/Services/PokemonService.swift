@@ -10,7 +10,7 @@ import Foundation
 protocol PokemonServiceProtocol {
     func fetchPokemonList(completion: @escaping (Result<[Pokemon], Error>) -> Void)
     func fetchPokemonDetail(pokemonId: Int,
-                            completion: @escaping (Result<Pokemon, Error>) -> Void)
+                            completion: @escaping (Result<PokemonDetailResponse, Error>) -> Void)
 }
 
 final class PokemonService: PokemonServiceProtocol {
@@ -59,8 +59,8 @@ final class PokemonService: PokemonServiceProtocol {
     }
 
     func fetchPokemonDetail(pokemonId: Int,
-                            completion: @escaping (Result<Pokemon, any Error>) -> Void) {
-        let urlString = baseUrl + "\(pokemonId)"
+                            completion: @escaping (Result<PokemonDetailResponse, Error>) -> Void) {
+        let urlString = baseUrl + "/\(pokemonId)"
 
         guard let urlRequest = URL(string: urlString) else {
             logger.error("Error creating URL.")
@@ -81,7 +81,7 @@ final class PokemonService: PokemonServiceProtocol {
             }
 
             do {
-                let pokemon = try JSONDecoder().decode(Pokemon.self, from: data)
+                let pokemon = try JSONDecoder().decode(PokemonDetailResponse.self, from: data)
                 completion(.success(pokemon))
             } catch {
                 logger.error("Error parsing data. \(error)")

@@ -28,10 +28,20 @@ final class PokemonDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .red
+        fetchPokemon()
     }
 
 }
 
 extension PokemonDetailVC {
-    private func fetchPokemon() { }
+    private func fetchPokemon() {
+        service.fetchPokemonDetail(pokemonId: pokemonId) { result in
+            switch result {
+            case .success(let pokemonDetail):
+                print("Pokemon Detail: \(pokemonDetail)")
+            case .failure(let error):
+                logger.error("An error occurred: \(error)")
+            }
+        }
+    }
 }
