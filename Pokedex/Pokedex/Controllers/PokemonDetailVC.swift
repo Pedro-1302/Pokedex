@@ -10,6 +10,15 @@ import UIKit
 final class PokemonDetailVC: UIViewController {
     private let service: PokemonServiceProtocol
 
+    private let cardView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 32
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     let pokemonId: Int
 
     init(
@@ -28,9 +37,19 @@ final class PokemonDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .red
+        configureCardView()
         fetchPokemon()
     }
 
+    private func configureCardView() {
+        view.addSubview(cardView)
+        NSLayoutConstraint.activate([
+            cardView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            cardView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            cardView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.6)
+        ])
+    }
 }
 
 extension PokemonDetailVC {
