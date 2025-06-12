@@ -81,8 +81,9 @@ final class PokemonService: PokemonServiceProtocol {
             }
 
             do {
-                let pokemon = try JSONDecoder().decode(PokemonDetailResponse.self, from: data)
-                completion(.success(pokemon))
+                let dto = try JSONDecoder().decode(PokemonDetailDTO.self, from: data)
+                let domainModel = dto.toDomain()
+                completion(.success(domainModel))
             } catch {
                 logger.error("Error parsing data. \(error)")
                 completion(.failure(error))

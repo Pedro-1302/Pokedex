@@ -17,6 +17,7 @@ extension PokemonResponse {
     func toPokemon() -> Pokemon {
         let id: Int = url.getPokemonId() ?? 0
         let imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png"
+        let name = name.capitalizingFirstLetter()
         return Pokemon(
             id: id,
             name: name,
