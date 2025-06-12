@@ -19,14 +19,27 @@ final class PokemonDetailVC: UIViewController {
         return view
     }()
 
+    private let loadingView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.startAnimating()
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(spinner)
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        return view
+    }()
+
     let pokemonId: Int
 
     private var pokemon: PokemonDetailResponse = .createMock()
 
-    init(
-        pokemonId: Int,
-        service: PokemonServiceProtocol = PokemonService()
-    ) {
+    init(pokemonId: Int,
+         service: PokemonServiceProtocol = PokemonService()) {
         self.pokemonId = pokemonId
         self.service = service
         super.init(nibName: nil, bundle: nil)
@@ -38,11 +51,17 @@ final class PokemonDetailVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .red
+        view.backgroundColor = .red
         configureCardView()
-        fetchPokemon()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchPokemon()
+    }
+}
+
+extension PokemonDetailVC {
     private func configureCardView() {
         view.addSubview(cardView)
         NSLayoutConstraint.activate([
@@ -52,19 +71,37 @@ final class PokemonDetailVC: UIViewController {
             cardView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.6)
         ])
     }
-}
 
-extension PokemonDetailVC {
+    private func showLoading() {
+        view.addSubview(loadingView)
+        NSLayoutConstraint.activate([
+            loadingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            loadingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            loadingView.topAnchor.constraint(equalTo: view.topAnchor),
+            loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
+    private func hideLoading() {
+        UIView.animate(withDuration: 0.3, animations: {
+            self.loadingView.alpha = 0
+        }, completion: { _ in
+            self.loadingView.removeFromSuperview()
+        })
+    }
+
     private func fetchPokemon() {
+        showLoading()
         service.fetchPokemonDetail(pokemonId: pokemonId) { result in
-            switch result {
-            case .success(let pokemonDetail):
-                DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async { [weak self] in
+                self?.hideLoading()
+                switch result {
+                case .success(let pokemonDetail):
                     self?.pokemon = pokemonDetail
+                    self?.navigationItem.title = pokemonDetail.name
+                case .failure(let error):
+                    logger.error("An error occurred: \(error)")
                 }
-                print("Pokemon Detail: \(pokemonDetail)")
-            case .failure(let error):
-                logger.error("An error occurred: \(error)")
             }
         }
     }
