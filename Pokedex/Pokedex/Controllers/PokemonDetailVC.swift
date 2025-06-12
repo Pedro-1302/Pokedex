@@ -21,6 +21,8 @@ final class PokemonDetailVC: UIViewController {
 
     let pokemonId: Int
 
+    private var pokemon: PokemonDetailResponse = .createMock()
+
     init(
         pokemonId: Int,
         service: PokemonServiceProtocol = PokemonService()
@@ -57,6 +59,9 @@ extension PokemonDetailVC {
         service.fetchPokemonDetail(pokemonId: pokemonId) { result in
             switch result {
             case .success(let pokemonDetail):
+                DispatchQueue.main.async { [weak self] in
+                    self?.pokemon = pokemonDetail
+                }
                 print("Pokemon Detail: \(pokemonDetail)")
             case .failure(let error):
                 logger.error("An error occurred: \(error)")
