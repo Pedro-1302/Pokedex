@@ -10,9 +10,45 @@ import UIKit
 final class PokemonDetailVC: UIViewController {
     private let service: PokemonServiceProtocol
 
+    private let headerStackView: UIStackView = {
+        let view = UIStackView()
+        view.backgroundColor = .orange
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.axis = .horizontal
+        view.spacing = 16
+        view.alignment = .center
+        view.isLayoutMarginsRelativeArrangement = true
+        view.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        return view
+    }()
+
+    private let pokemonImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+
+    private let infoStackView: UIStackView = {
+        let view = UIStackView()
+        view.backgroundColor = .red
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.axis = .vertical
+        return view
+    }()
+
+    private let pokemonNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     private let cardView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .blue
         view.layer.cornerRadius = 32
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -51,8 +87,13 @@ final class PokemonDetailVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
+        view.backgroundColor = .white
+        configureNavigationBar()
+        configureHeaderStackView()
+        configurePokemonImageView()
+        configureInfoStackView()
         configureCardView()
+        configurePokemonLabelName()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -62,13 +103,46 @@ final class PokemonDetailVC: UIViewController {
 }
 
 extension PokemonDetailVC {
+    private func configureNavigationBar() {
+        navigationItem.largeTitleDisplayMode = .never
+        navigationController?.navigationBar.prefersLargeTitles = false
+    }
+
+    private func configureHeaderStackView() {
+        view.addSubview(headerStackView)
+        NSLayoutConstraint.activate([
+            headerStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerStackView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.2)
+        ])
+    }
+
+    private func configureInfoStackView() {
+        headerStackView.addArrangedSubview(infoStackView)
+        NSLayoutConstraint.activate([
+            headerStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerStackView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.2)
+        ])
+    }
+
+    private func configurePokemonImageView() {
+        headerStackView.addArrangedSubview(pokemonImageView)
+        NSLayoutConstraint.activate([
+            pokemonImageView.widthAnchor.constraint(equalToConstant: 96),
+            pokemonImageView.heightAnchor.constraint(equalToConstant: 96)
+        ])
+    }
+
     private func configureCardView() {
         view.addSubview(cardView)
         NSLayoutConstraint.activate([
+            cardView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor, constant: 16),
             cardView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             cardView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            cardView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.6)
+            cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
 
@@ -80,6 +154,10 @@ extension PokemonDetailVC {
             loadingView.topAnchor.constraint(equalTo: view.topAnchor),
             loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+
+    private func configurePokemonLabelName() {
+        infoStackView.addArrangedSubview(pokemonNameLabel)
     }
 
     private func hideLoading() {
@@ -97,12 +175,43 @@ extension PokemonDetailVC {
                 self?.hideLoading()
                 switch result {
                 case .success(let pokemonDetail):
+                    let name = pokemonDetail.name
+                    let url = pokemonDetail.sprites.other.showdown.frontDefault
+
                     self?.pokemon = pokemonDetail
                     self?.navigationItem.title = pokemonDetail.name
+                    self?.pokemonNameLabel.text = pokemonDetail.name
+                    self?.loadImage(from: url)
                 case .failure(let error):
                     logger.error("An error occurred: \(error)")
                 }
             }
+        }
+    }
+
+    private func loadImage(from urlString: String) {
+        if let url = URL(string: urlString) {
+            let shimmer = ShimmerView(frame: pokemonImageView.bounds)
+            pokemonImageView.kf.setImage(
+                with: url,
+                placeholder: shimmer,
+                options: [
+                    .transition(.fade(0.3)),
+                    .cacheOriginalImage
+                ],
+                completionHandler: { result in
+                    shimmer.stopShimmer()
+                    switch result {
+                    case .success(let value):
+                        logger.debug("Image loaded: \(value.source.url?.absoluteString ?? "")")
+                    case .failure(let error):
+                        logger.error("Failed to load image: \(error)")
+                    }
+                }
+            )
+        } else {
+            logger.error("Error loading image URL. Attempt to use placeholder image.")
+            pokemonImageView.image = UIImage(named: "placeholder")
         }
     }
 }
