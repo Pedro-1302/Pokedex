@@ -20,7 +20,7 @@ extension PokemonDetailDTO {
     func toDomain() -> PokemonDetailResponse {
         return PokemonDetailResponse(
             height: height,
-            name: name.capitalizingFirstLetter(),
+            name: name.capitalized,
             sprites: sprites,
             types: types,
             stats: stats,

@@ -5,7 +5,7 @@
 //  Created by Pedro Franco on 09/06/25.
 //
 
-import Foundation
+import UIKit
 
 struct PokemonDetailResponse: Codable {
     let height: Int
@@ -14,6 +14,14 @@ struct PokemonDetailResponse: Codable {
     let types: [PokemonTypeSlot]
     let stats: [PokemonStatSlot]
     let weight: Int
+
+    var typeNames: [String] {
+        types.map { $0.type.name.displayName }
+    }
+
+    var typeColors: [UIColor] {
+        types.map { $0.type.name.color }
+    }
 }
 
 extension PokemonDetailResponse {

@@ -179,8 +179,8 @@ extension PokemonDetailVC {
                     let url = pokemonDetail.sprites.other.showdown.frontDefault
 
                     self?.pokemon = pokemonDetail
-                    self?.navigationItem.title = pokemonDetail.name
-                    self?.pokemonNameLabel.text = pokemonDetail.name
+                    self?.navigationItem.title = name
+                    self?.pokemonNameLabel.text = name
                     self?.loadImage(from: url)
                 case .failure(let error):
                     logger.error("An error occurred: \(error)")
