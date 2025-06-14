@@ -46,24 +46,10 @@ final class PokemonDetailVC: UIViewController {
 
     private let cardView: UIView = {
         let view = UIView()
+        view.backgroundColor = .white
         view.layer.cornerRadius = 32
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    private let loadingView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        let spinner = UIActivityIndicatorView(style: .large)
-        spinner.startAnimating()
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(spinner)
-        NSLayoutConstraint.activate([
-            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
         return view
     }()
 
@@ -77,12 +63,18 @@ final class PokemonDetailVC: UIViewController {
         return view
     }()
 
+    private let blurBackgroundView: UIVisualEffectView = {
+        let blurEffect = UIBlurEffect(style: .systemMaterial)
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        return blurView
+    }()
+
     let pokemonId: Int
 
     private var pokemon: PokemonDetailResponse = .createMock()
 
-    init(pokemonId: Int,
-         service: PokemonServiceProtocol = PokemonService()) {
+    init(pokemonId: Int, service: PokemonServiceProtocol = PokemonService()) {
         self.pokemonId = pokemonId
         self.service = service
         super.init(nibName: nil, bundle: nil)
@@ -94,7 +86,14 @@ final class PokemonDetailVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.addSubview(blurBackgroundView)
+        NSLayoutConstraint.activate([
+            blurBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurBackgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            blurBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        view.backgroundColor = .white.withAlphaComponent(0.9)
         configureNavigationBar()
         configureHeaderStackView()
         configurePokemonImageView()
@@ -160,16 +159,6 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func showLoading() {
-        view.addSubview(loadingView)
-        NSLayoutConstraint.activate([
-            loadingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            loadingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            loadingView.topAnchor.constraint(equalTo: view.topAnchor),
-            loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
-
     private func configurePokemonLabelName() {
         infoStackView.addArrangedSubview(pokemonNameLabel)
     }
@@ -178,19 +167,9 @@ extension PokemonDetailVC {
         infoStackView.addArrangedSubview(pokemonTypesStackView)
     }
 
-    private func hideLoading() {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.loadingView.alpha = 0
-        }, completion: { _ in
-            self.loadingView.removeFromSuperview()
-        })
-    }
-
     private func fetchPokemon() {
-        showLoading()
         service.fetchPokemonDetail(pokemonId: pokemonId) { result in
             DispatchQueue.main.async { [weak self] in
-                self?.hideLoading()
                 switch result {
                 case .success(let pokemonDetail):
                     let types = pokemonDetail.types.compactMap { $0.type.name }
@@ -200,9 +179,9 @@ extension PokemonDetailVC {
                     self?.pokemon = pokemonDetail
                     self?.navigationItem.title = name
                     self?.pokemonNameLabel.text = name
-                    self?.view.backgroundColor = color
                     self?.loadImage(from: url)
                     self?.showPokemonTypes(types)
+                    self?.view.backgroundColor = color
                 case .failure(let error):
                     logger.error("An error occurred: \(error)")
                 }
@@ -274,7 +253,6 @@ extension PokemonDetailVC {
                 with: url,
                 placeholder: shimmer,
                 options: [
-                    .transition(.fade(0.3)),
                     .cacheOriginalImage
                 ],
                 completionHandler: { result in
