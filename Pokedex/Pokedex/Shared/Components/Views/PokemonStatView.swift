@@ -1,6 +1,6 @@
 import UIKit
 
-final class g: UIStackView {
+final class PokemonStatView: UIStackView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .bold)
