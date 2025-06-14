@@ -1,10 +1,3 @@
-//
-//  PokemonListVC.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 31/05/25.
-//
-
 import UIKit
 
 final class PokemonListVC: UIViewController {
@@ -32,8 +25,20 @@ final class PokemonListVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setTableViewAsRootView()
         configureNavigationBarTitle()
+    }
+}
+
+// MARK: - Private Methods
+extension PokemonListVC {
+    private func setTableViewAsRootView() {
         view = tableView
+    }
+
+    private func configureNavigationBarTitle() {
+        navigationItem.title = "Pokedex"
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
 
     private func fetchPokemons() {
@@ -52,13 +57,7 @@ final class PokemonListVC: UIViewController {
     }
 }
 
-extension PokemonListVC {
-    private func configureNavigationBarTitle() {
-        navigationItem.title = "Pokedex"
-        navigationController?.navigationBar.prefersLargeTitles = true
-    }
-}
-
+// MARK: - UITableViewDelegate Methods
 extension PokemonListVC: UITableViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
@@ -76,6 +75,7 @@ extension PokemonListVC: UITableViewDelegate {
     }
 }
 
+// MARK: - UITableViewDataSource Methods
 extension PokemonListVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return pokemonList.count
