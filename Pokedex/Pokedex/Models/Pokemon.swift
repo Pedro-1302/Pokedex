@@ -9,7 +9,7 @@ struct Pokemon: Codable {
 
 // swiftlint:disable line_length
 extension Pokemon {
-    static func getMock() -> Pokemon {
+    static func createMock() -> Pokemon {
         let id = 94
         return Pokemon(
             id: id,
