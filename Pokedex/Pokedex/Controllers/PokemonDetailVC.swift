@@ -12,7 +12,6 @@ final class PokemonDetailVC: UIViewController {
 
     private let headerStackView: UIStackView = {
         let view = UIStackView()
-        view.backgroundColor = .orange
         view.translatesAutoresizingMaskIntoConstraints = false
         view.axis = .horizontal
         view.spacing = 16
@@ -31,7 +30,6 @@ final class PokemonDetailVC: UIViewController {
 
     private let infoStackView: UIStackView = {
         let view = UIStackView()
-        view.backgroundColor = .red
         view.translatesAutoresizingMaskIntoConstraints = false
         view.axis = .vertical
         return view
@@ -41,14 +39,13 @@ final class PokemonDetailVC: UIViewController {
         let label = UILabel()
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .white
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
     private let cardView: UIView = {
         let view = UIView()
-        view.backgroundColor = .blue
         view.layer.cornerRadius = 32
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -67,6 +64,16 @@ final class PokemonDetailVC: UIViewController {
             spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+        return view
+    }()
+
+    private let pokemonTypesStackView: UIStackView = {
+        let view = UIStackView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.axis = .horizontal
+        view.distribution = .fill
+        view.alignment = .leading
+        view.spacing = 8
         return view
     }()
 
@@ -94,11 +101,18 @@ final class PokemonDetailVC: UIViewController {
         configureInfoStackView()
         configureCardView()
         configurePokemonLabelName()
+        configurePokemonTypeStackView()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchPokemon()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
 }
 
@@ -160,6 +174,10 @@ extension PokemonDetailVC {
         infoStackView.addArrangedSubview(pokemonNameLabel)
     }
 
+    private func configurePokemonTypeStackView() {
+        infoStackView.addArrangedSubview(pokemonTypesStackView)
+    }
+
     private func hideLoading() {
         UIView.animate(withDuration: 0.3, animations: {
             self.loadingView.alpha = 0
@@ -175,18 +193,78 @@ extension PokemonDetailVC {
                 self?.hideLoading()
                 switch result {
                 case .success(let pokemonDetail):
+                    let types = pokemonDetail.types.compactMap { $0.type.name }
                     let name = pokemonDetail.name
                     let url = pokemonDetail.sprites.other.showdown.frontDefault
-
+                    let color = pokemonDetail.types.map { $0.type.name.color }.first
                     self?.pokemon = pokemonDetail
                     self?.navigationItem.title = name
                     self?.pokemonNameLabel.text = name
+                    self?.view.backgroundColor = color
                     self?.loadImage(from: url)
+                    self?.showPokemonTypes(types)
                 case .failure(let error):
                     logger.error("An error occurred: \(error)")
                 }
             }
         }
+    }
+
+    private func showPokemonTypes(_ types: [PokemonTypeName]) {
+        pokemonTypesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        let verticalStack = UIStackView()
+        verticalStack.axis = .vertical
+        verticalStack.spacing = 8
+        verticalStack.alignment = .leading
+        verticalStack.distribution = .fill
+        verticalStack.translatesAutoresizingMaskIntoConstraints = false
+        pokemonTypesStackView.addArrangedSubview(verticalStack)
+        let maxWidth = view.bounds.width - 32
+        var currentLineStack = createNewLineStackView()
+        verticalStack.addArrangedSubview(currentLineStack)
+        var currentLineWidth: CGFloat = 0
+        for type in types {
+            let typeView = UIView()
+            typeView.backgroundColor = type.color
+            typeView.layer.cornerRadius = 4
+            typeView.translatesAutoresizingMaskIntoConstraints = false
+
+            let label = UILabel()
+            label.text = type.displayName
+            label.textColor = .white
+            label.font = .systemFont(ofSize: 14, weight: .bold)
+            label.textAlignment = .center
+            label.translatesAutoresizingMaskIntoConstraints = false
+
+            typeView.addSubview(label)
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: typeView.topAnchor, constant: 4),
+                label.bottomAnchor.constraint(equalTo: typeView.bottomAnchor, constant: -4),
+                label.leadingAnchor.constraint(equalTo: typeView.leadingAnchor, constant: 8),
+                label.trailingAnchor.constraint(equalTo: typeView.trailingAnchor, constant: -8)
+            ])
+
+            let labelSize = label.intrinsicContentSize
+            let typeViewWidth = labelSize.width + 16
+            if currentLineWidth + typeViewWidth + (currentLineWidth > 0 ? 8 : 0) > maxWidth {
+                currentLineStack = createNewLineStackView()
+                verticalStack.addArrangedSubview(currentLineStack)
+                currentLineWidth = 0
+            }
+
+            currentLineStack.addArrangedSubview(typeView)
+            typeView.widthAnchor.constraint(equalToConstant: typeViewWidth).isActive = true
+            currentLineWidth += typeViewWidth + (currentLineWidth > 0 ? 8 : 0)
+        }
+    }
+
+    private func createNewLineStackView() -> UIStackView {
+        let lineStack = UIStackView()
+        lineStack.axis = .horizontal
+        lineStack.spacing = 8
+        lineStack.alignment = .center
+        lineStack.distribution = .fillProportionally
+        return lineStack
     }
 
     private func loadImage(from urlString: String) {
