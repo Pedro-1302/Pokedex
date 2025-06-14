@@ -72,7 +72,7 @@ final class PokemonCellView: UIView {
     func configure(_ pokemon: Pokemon) {
         nameLabel.text = pokemon.name
         dexIdLabel.text = pokemon.id.getPokemonDexId()
-        loadImage(from: pokemon.imageUrl)
+        imageView.setImage(from: pokemon.imageUrl)
     }
 }
 
@@ -115,31 +115,5 @@ extension PokemonCellView {
                                                         constant: -stackViewPadding),
             verticalStackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
         ])
-    }
-
-    private func loadImage(from urlString: String) {
-        if let url = URL(string: urlString) {
-            let shimmer = ShimmerView(frame: imageView.bounds)
-            imageView.kf.setImage(
-                with: url,
-                placeholder: shimmer,
-                options: [
-                    .transition(.fade(0.3)),
-                    .cacheOriginalImage
-                ],
-                completionHandler: { result in
-                    shimmer.stopShimmer()
-                    switch result {
-                    case .success(let value):
-                        logger.debug("Image loaded: \(value.source.url?.absoluteString ?? "")")
-                    case .failure(let error):
-                        logger.error("Failed to load image: \(error)")
-                    }
-                }
-            )
-        } else {
-            logger.error("Error loading image URL. Attempt to use placeholder image.")
-            imageView.image = UIImage(named: "placeholder")
-        }
     }
 }

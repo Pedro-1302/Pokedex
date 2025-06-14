@@ -292,7 +292,7 @@ extension PokemonDetailVC {
             self?.navigationItem.title = name
             self?.pokemonNameLabel.text = name
             self?.dexIdLabel.text = id.getPokemonDexId()
-            self?.loadImage(from: url)
+            self?.pokemonImageView.setImage(from: url)
             self?.showPokemonTypes(types)
             self?.pokemonStatsLabel.textColor = color
 
@@ -384,30 +384,5 @@ extension PokemonDetailVC {
         lineStack.alignment = .center
         lineStack.distribution = .fillProportionally
         return lineStack
-    }
-
-    private func loadImage(from urlString: String) {
-        if let url = URL(string: urlString) {
-            let shimmer = ShimmerView(frame: pokemonImageView.bounds)
-            pokemonImageView.kf.setImage(
-                with: url,
-                placeholder: shimmer,
-                options: [
-                    .cacheOriginalImage
-                ],
-                completionHandler: { result in
-                    shimmer.stopShimmer()
-                    switch result {
-                    case .success(let value):
-                        logger.debug("Image loaded: \(value.source.url?.absoluteString ?? "")")
-                    case .failure(let error):
-                        logger.error("Failed to load image: \(error)")
-                    }
-                }
-            )
-        } else {
-            logger.error("Error loading image URL. Attempt to use placeholder image.")
-            pokemonImageView.image = UIImage(named: "placeholder")
-        }
     }
 }
