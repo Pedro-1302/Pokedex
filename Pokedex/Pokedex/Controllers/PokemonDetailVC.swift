@@ -1,58 +1,9 @@
-//
-//  PokemonDetailVC.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 09/06/25.
-//
-
 import UIKit
 
 final class PokemonDetailVC: UIViewController {
     private let service: PokemonServiceProtocol
 
-    private let headerStackView: UIStackView = {
-        let view = UIStackView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.axis = .horizontal
-        view.spacing = 16
-        view.alignment = .center
-        view.isLayoutMarginsRelativeArrangement = true
-        view.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        return view
-    }()
-
-    private let pokemonImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-
-    private let infoStackView: UIStackView = {
-        let view = UIStackView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.axis = .vertical
-        view.spacing = 4
-        return view
-    }()
-
-    private let pokemonNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.textColor = .white
-        label.textAlignment = .left
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-
-    private let dexIdLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
-        label.textColor = .secondaryLabel
-        label.textAlignment = .left
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let headerView = PokemonHeaderView()
 
     private let cardView: UIView = {
         let view = UIView()
@@ -60,16 +11,6 @@ final class PokemonDetailVC: UIViewController {
         view.layer.cornerRadius = 32
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    private let pokemonTypesStackView: UIStackView = {
-        let view = UIStackView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.axis = .horizontal
-        view.distribution = .fill
-        view.alignment = .leading
-        view.spacing = 8
         return view
     }()
 
@@ -114,13 +55,9 @@ final class PokemonDetailVC: UIViewController {
         configureNavigationBar()
         configureBlur()
         configureHeaderStackView()
-        configurePokemonImageView()
-        configureInfoStackView()
         configureCardView()
-        configureDexIdLabel()
-        configurePokemonLabelName()
-        configurePokemonTypeStackView()
     }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchPokemon()
@@ -150,37 +87,20 @@ extension PokemonDetailVC {
     }
 
     private func configureHeaderStackView() {
-        view.addSubview(headerStackView)
-        NSLayoutConstraint.activate([
-            headerStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerStackView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.2)
-        ])
-    }
+        view.addSubview(headerView)
 
-    private func configureInfoStackView() {
-        headerStackView.addArrangedSubview(infoStackView)
         NSLayoutConstraint.activate([
-            headerStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerStackView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.2)
-        ])
-    }
-
-    private func configurePokemonImageView() {
-        headerStackView.addArrangedSubview(pokemonImageView)
-        NSLayoutConstraint.activate([
-            pokemonImageView.widthAnchor.constraint(equalToConstant: 96),
-            pokemonImageView.heightAnchor.constraint(equalToConstant: 96)
+            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.2)
         ])
     }
 
     private func configureCardView() {
         view.addSubview(cardView)
         NSLayoutConstraint.activate([
-            cardView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor, constant: 16),
+            cardView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 16),
             cardView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             cardView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -257,18 +177,6 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureDexIdLabel() {
-        infoStackView.addArrangedSubview(dexIdLabel)
-    }
-
-    private func configurePokemonLabelName() {
-        infoStackView.addArrangedSubview(pokemonNameLabel)
-    }
-
-    private func configurePokemonTypeStackView() {
-        infoStackView.addArrangedSubview(pokemonTypesStackView)
-    }
-
     private func fetchPokemon() {
         service.fetchPokemonDetail(pokemonId: pokemonId) { [weak self] result in
             switch result {
@@ -290,12 +198,12 @@ extension PokemonDetailVC {
             self?.view.backgroundColor = color
             self?.pokemon = pokemonDetail
             self?.navigationItem.title = name
-            self?.pokemonNameLabel.text = name
-            self?.dexIdLabel.text = id.getPokemonDexId()
-            self?.pokemonImageView.setImage(from: url)
-            self?.showPokemonTypes(types)
+            let headerInfo = PokemonHeaderInfo(name: name,
+                                               dexId: id,
+                                               imageURL: url,
+                                               types: types)
+            self?.headerView.configure(with: headerInfo)
             self?.pokemonStatsLabel.textColor = color
-
             for stat in pokemonDetail.stats {
                 switch stat.stat.name {
                 case .hp:
@@ -325,62 +233,5 @@ extension PokemonDetailVC {
                 }
             }
         }
-    }
-
-    private func showPokemonTypes(_ types: [PokemonTypeName]) {
-        pokemonTypesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let verticalStack = UIStackView()
-        verticalStack.axis = .vertical
-        verticalStack.spacing = 8
-        verticalStack.alignment = .leading
-        verticalStack.distribution = .fill
-        verticalStack.translatesAutoresizingMaskIntoConstraints = false
-        pokemonTypesStackView.addArrangedSubview(verticalStack)
-        let maxWidth = view.bounds.width - 32
-        var currentLineStack = createNewLineStackView()
-        verticalStack.addArrangedSubview(currentLineStack)
-        var currentLineWidth: CGFloat = 0
-        for type in types {
-            let typeView = UIView()
-            typeView.backgroundColor = type.color
-            typeView.layer.cornerRadius = 4
-            typeView.translatesAutoresizingMaskIntoConstraints = false
-
-            let label = UILabel()
-            label.text = type.displayName
-            label.textColor = .white
-            label.font = .systemFont(ofSize: 14, weight: .bold)
-            label.textAlignment = .center
-            label.translatesAutoresizingMaskIntoConstraints = false
-
-            typeView.addSubview(label)
-            NSLayoutConstraint.activate([
-                label.topAnchor.constraint(equalTo: typeView.topAnchor, constant: 4),
-                label.bottomAnchor.constraint(equalTo: typeView.bottomAnchor, constant: -4),
-                label.leadingAnchor.constraint(equalTo: typeView.leadingAnchor, constant: 8),
-                label.trailingAnchor.constraint(equalTo: typeView.trailingAnchor, constant: -8)
-            ])
-
-            let labelSize = label.intrinsicContentSize
-            let typeViewWidth = labelSize.width + 16
-            if currentLineWidth + typeViewWidth + (currentLineWidth > 0 ? 8 : 0) > maxWidth {
-                currentLineStack = createNewLineStackView()
-                verticalStack.addArrangedSubview(currentLineStack)
-                currentLineWidth = 0
-            }
-
-            currentLineStack.addArrangedSubview(typeView)
-            typeView.widthAnchor.constraint(equalToConstant: typeViewWidth).isActive = true
-            currentLineWidth += typeViewWidth + (currentLineWidth > 0 ? 8 : 0)
-        }
-    }
-
-    private func createNewLineStackView() -> UIStackView {
-        let lineStack = UIStackView()
-        lineStack.axis = .horizontal
-        lineStack.spacing = 8
-        lineStack.alignment = .center
-        lineStack.distribution = .fillProportionally
-        return lineStack
     }
 }
