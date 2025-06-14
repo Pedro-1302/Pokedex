@@ -1,10 +1,3 @@
-//
-//  PokemonTableViewCell.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 31/05/25.
-//
-
 import UIKit
 
 final class PokemonTableViewCell: UITableViewCell {
@@ -23,6 +16,13 @@ final class PokemonTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func configure(_ pokemon: Pokemon) {
+        pokemonCell.configure(pokemon)
+    }
+}
+
+// MARK: - Private Methods
+extension PokemonTableViewCell {
     private func setupCell() {
         contentView.addSubview(pokemonCell)
         NSLayoutConstraint.activate([
@@ -31,9 +31,5 @@ final class PokemonTableViewCell: UITableViewCell {
             pokemonCell.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             pokemonCell.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
-    }
-
-    func configure(_ pokemon: Pokemon) {
-        pokemonCell.configure(pokemon)
     }
 }
