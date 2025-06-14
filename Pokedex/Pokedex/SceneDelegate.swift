@@ -1,14 +1,6 @@
-//
-//  SceneDelegate.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 31/05/25.
-//
-
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
 
     func scene(
@@ -17,12 +9,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let windowScene = scene as? UIWindowScene else { return }
-        let viewController = PokemonListVC()
-        let navController = UINavigationController(rootViewController: viewController)
-
-        window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = navController
-        window?.makeKeyAndVisible()
+        let rootViewController = createRootNavigationController()
+        setupWindow(with: rootViewController, on: windowScene)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) { }
@@ -34,4 +22,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) { }
 
     func sceneDidEnterBackground(_ scene: UIScene) { }
+}
+
+extension SceneDelegate {
+    private func createRootNavigationController() -> UINavigationController {
+        let pokemonListVC = PokemonListVC()
+        return UINavigationController(rootViewController: pokemonListVC)
+    }
+
+    private func setupWindow(with rootViewController: UIViewController, on windowScene: UIWindowScene) {
+        let mainWindow = UIWindow(windowScene: windowScene)
+        mainWindow.rootViewController = rootViewController
+        mainWindow.makeKeyAndVisible()
+        self.window = mainWindow
+    }
 }
