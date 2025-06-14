@@ -1,12 +1,4 @@
-//
-//  PokemonCellView.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 31/05/25.
-//
-
 import UIKit
-import Kingfisher
 
 final class PokemonCellView: UIView {
     private let containerView: UIView = {
