@@ -1,10 +1,3 @@
-//
-//  PokemonStatSlot.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 09/06/25.
-//
-
 import Foundation
 
 struct PokemonStatSlot: Codable {
@@ -21,6 +14,8 @@ struct PokemonStatSlot: Codable {
 
 extension PokemonStatSlot {
     static func createMock() -> PokemonStatSlot {
-        PokemonStatSlot(baseStat: 60, effort: 0, stat: .createMock())
+        PokemonStatSlot(baseStat: 60,
+                        effort: 0,
+                        stat: .createMock())
     }
 }

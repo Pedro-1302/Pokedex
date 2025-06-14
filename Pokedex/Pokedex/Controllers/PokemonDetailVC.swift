@@ -298,32 +298,30 @@ extension PokemonDetailVC {
 
             for stat in pokemonDetail.stats {
                 switch stat.stat.name {
-                case "hp":
+                case .hp:
                     self?.hpStatView.updateStat(baseValue: stat.baseStat,
                                                 maxValue: 255,
                                                 color: color)
-                case "attack":
+                case .attack:
                     self?.attackStatView.updateStat(baseValue: stat.baseStat,
                                                     maxValue: 181,
                                                     color: color)
-                case "defense":
+                case .defense:
                     self?.defenseStatView.updateStat(baseValue: stat.baseStat,
                                                      maxValue: 230,
                                                      color: color)
-                case "special-attack":
+                case .specialAttack:
                     self?.specialAttackStatView.updateStat(baseValue: stat.baseStat,
                                                            maxValue: 180,
                                                            color: color)
-                case "special-defense":
+                case .specialDefense:
                     self?.specialDefenseStatView.updateStat(baseValue: stat.baseStat,
                                                             maxValue: 230,
                                                             color: color)
-                case "speed":
+                case .speed:
                     self?.speedStatView.updateStat(baseValue: stat.baseStat,
                                                    maxValue: 200,
                                                    color: color)
-                default:
-                    break
                 }
             }
         }
