@@ -1,10 +1,3 @@
-//
-//  PokemonResponse.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 31/05/25.
-//
-
 import Foundation
 
 struct PokemonResponse: Codable {
@@ -27,3 +20,10 @@ extension PokemonResponse {
     }
 }
 // swiftlint:enable line_length
+
+extension PokemonResponse {
+    static func createMock() -> PokemonResponse {
+        PokemonResponse(name: "gengar",
+                        url: "https://pokeapi.co/api/v2/pokemon/84")
+    }
+}
