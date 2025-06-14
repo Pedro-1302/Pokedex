@@ -1,10 +1,3 @@
-//
-//  PokemonDetailResponse.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 09/06/25.
-//
-
 import UIKit
 
 struct PokemonDetailResponse: Codable {
@@ -27,14 +20,12 @@ struct PokemonDetailResponse: Codable {
 
 extension PokemonDetailResponse {
     static func createMock() -> PokemonDetailResponse {
-        PokemonDetailResponse(
-            id: 84,
-            height: 15,
-            name: "gengar",
-            sprites: .createMock(),
-            types: [.createMock()],
-            stats: [.createMock()],
-            weight: 405
-        )
+        PokemonDetailResponse(id: 84,
+                              height: 15,
+                              name: "gengar",
+                              sprites: .createMock(),
+                              types: [.createMock()],
+                              stats: [.createMock()],
+                              weight: 405)
     }
 }
