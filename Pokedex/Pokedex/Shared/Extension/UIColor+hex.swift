@@ -1,10 +1,3 @@
-//
-//  UIColor+hex.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 13/06/25.
-//
-
 import UIKit
 
 // swiftlint:disable identifier_name
