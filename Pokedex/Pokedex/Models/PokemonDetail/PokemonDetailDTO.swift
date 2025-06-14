@@ -1,10 +1,3 @@
-//
-//  PokemonDetailDTO.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 12/06/25.
-//
-
 import Foundation
 
 struct PokemonDetailDTO: Codable {
@@ -19,14 +12,12 @@ struct PokemonDetailDTO: Codable {
 
 extension PokemonDetailDTO {
     func toDomain() -> PokemonDetailResponse {
-        return PokemonDetailResponse(
-            id: 84,
-            height: height,
-            name: name.capitalized,
-            sprites: sprites,
-            types: types,
-            stats: stats,
-            weight: weight
-        )
+        return PokemonDetailResponse(id: 84,
+                                     height: height,
+                                     name: name.capitalized,
+                                     sprites: sprites,
+                                     types: types,
+                                     stats: stats,
+                                     weight: weight)
     }
 }
