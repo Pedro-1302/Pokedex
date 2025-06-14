@@ -32,6 +32,7 @@ final class PokemonDetailVC: UIViewController {
         let view = UIStackView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.axis = .vertical
+        view.spacing = 4
         return view
     }()
 
@@ -39,6 +40,15 @@ final class PokemonDetailVC: UIViewController {
         let label = UILabel()
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .white
+        label.textAlignment = .left
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let dexIdLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.textColor = .secondaryLabel
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -70,6 +80,21 @@ final class PokemonDetailVC: UIViewController {
         return blurView
     }()
 
+    private let pokemonStatsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Base Stats"
+        label.font = .systemFont(ofSize: 21, weight: .semibold)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let hpStatView = PokemonStatView(title: "HP", maxValue: "255")
+    private let attackStatView = PokemonStatView(title: "Attack", maxValue: "181")
+    private let defenseStatView = PokemonStatView(title: "Defense", maxValue: "230")
+    private let specialAttackStatView = PokemonStatView(title: "Special Attack", maxValue: "180")
+    private let specialDefenseStatView = PokemonStatView(title: "Special Defense", maxValue: "230")
+    private let speedStatView = PokemonStatView(title: "Speed", maxValue: "200")
+
     let pokemonId: Int
 
     private var pokemon: PokemonDetailResponse = .createMock()
@@ -86,23 +111,16 @@ final class PokemonDetailVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.addSubview(blurBackgroundView)
-        NSLayoutConstraint.activate([
-            blurBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
-            blurBackgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            blurBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            blurBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-        view.backgroundColor = .white.withAlphaComponent(0.9)
         configureNavigationBar()
+        configureBlur()
         configureHeaderStackView()
         configurePokemonImageView()
         configureInfoStackView()
         configureCardView()
+        configureDexIdLabel()
         configurePokemonLabelName()
         configurePokemonTypeStackView()
     }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchPokemon()
@@ -119,6 +137,16 @@ extension PokemonDetailVC {
     private func configureNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.prefersLargeTitles = false
+    }
+
+    private func configureBlur() {
+        view.addSubview(blurBackgroundView)
+        NSLayoutConstraint.activate([
+            blurBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurBackgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            blurBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
 
     private func configureHeaderStackView() {
@@ -157,6 +185,80 @@ extension PokemonDetailVC {
             cardView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             cardView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        configurePokemonStatsLabel()
+        configureHpStatView()
+        configureAttackStatView()
+        configureDefenseStatView()
+        configureSpecialAttackStatView()
+        configureSpecialDefenseStatView()
+        configureSpeedStatView()
+    }
+
+    private func configurePokemonStatsLabel() {
+        cardView.addSubview(pokemonStatsLabel)
+        NSLayoutConstraint.activate([
+            pokemonStatsLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 32),
+            pokemonStatsLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 32),
+            pokemonStatsLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -32)
+        ])
+    }
+
+    private func configureHpStatView() {
+        cardView.addSubview(hpStatView)
+        NSLayoutConstraint.activate([
+            hpStatView.topAnchor.constraint(equalTo: pokemonStatsLabel.bottomAnchor, constant: 16),
+            hpStatView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 32),
+            hpStatView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -32)
+        ])
+    }
+
+    private func configureAttackStatView() {
+        cardView.addSubview(attackStatView)
+        NSLayoutConstraint.activate([
+            attackStatView.topAnchor.constraint(equalTo: hpStatView.bottomAnchor, constant: 16),
+            attackStatView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 32),
+            attackStatView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -32)
+        ])
+    }
+
+    private func configureDefenseStatView() {
+        cardView.addSubview(defenseStatView)
+        NSLayoutConstraint.activate([
+            defenseStatView.topAnchor.constraint(equalTo: attackStatView.bottomAnchor, constant: 16),
+            defenseStatView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 32),
+            defenseStatView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -32)
+        ])
+    }
+
+    private func configureSpecialAttackStatView() {
+        cardView.addSubview(specialAttackStatView)
+        NSLayoutConstraint.activate([
+            specialAttackStatView.topAnchor.constraint(equalTo: defenseStatView.bottomAnchor, constant: 16),
+            specialAttackStatView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 32),
+            specialAttackStatView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -32)
+        ])
+    }
+
+    private func configureSpecialDefenseStatView() {
+        cardView.addSubview(specialDefenseStatView)
+        NSLayoutConstraint.activate([
+            specialDefenseStatView.topAnchor.constraint(equalTo: specialAttackStatView.bottomAnchor, constant: 16),
+            specialDefenseStatView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 32),
+            specialDefenseStatView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -32)
+        ])
+    }
+
+    private func configureSpeedStatView() {
+        cardView.addSubview(speedStatView)
+        NSLayoutConstraint.activate([
+            speedStatView.topAnchor.constraint(equalTo: specialDefenseStatView.bottomAnchor, constant: 16),
+            speedStatView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 32),
+            speedStatView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -32)
+        ])
+    }
+
+    private func configureDexIdLabel() {
+        infoStackView.addArrangedSubview(dexIdLabel)
     }
 
     private func configurePokemonLabelName() {
@@ -168,22 +270,60 @@ extension PokemonDetailVC {
     }
 
     private func fetchPokemon() {
-        service.fetchPokemonDetail(pokemonId: pokemonId) { result in
-            DispatchQueue.main.async { [weak self] in
-                switch result {
-                case .success(let pokemonDetail):
-                    let types = pokemonDetail.types.compactMap { $0.type.name }
-                    let name = pokemonDetail.name
-                    let url = pokemonDetail.sprites.other.showdown.frontDefault
-                    let color = pokemonDetail.types.map { $0.type.name.color }.first
-                    self?.pokemon = pokemonDetail
-                    self?.navigationItem.title = name
-                    self?.pokemonNameLabel.text = name
-                    self?.loadImage(from: url)
-                    self?.showPokemonTypes(types)
-                    self?.view.backgroundColor = color
-                case .failure(let error):
-                    logger.error("An error occurred: \(error)")
+        service.fetchPokemonDetail(pokemonId: pokemonId) { [weak self] result in
+            switch result {
+            case .success(let pokemonDetail):
+                self?.setupViews(pokemonDetail)
+            case .failure(let error):
+                logger.error("An error occurred: \(error)")
+            }
+        }
+    }
+
+    private func setupViews(_ pokemonDetail: PokemonDetailResponse) {
+        DispatchQueue.main.async { [weak self] in
+            let id = pokemonDetail.id
+            let types = pokemonDetail.types.compactMap { $0.type.name }
+            let name = pokemonDetail.name
+            let url = pokemonDetail.sprites.other.showdown.frontDefault
+            let color = pokemonDetail.types.map { $0.type.name.color }.first
+            self?.view.backgroundColor = color
+            self?.pokemon = pokemonDetail
+            self?.navigationItem.title = name
+            self?.pokemonNameLabel.text = name
+            self?.dexIdLabel.text = id.getPokemonDexId()
+            self?.loadImage(from: url)
+            self?.showPokemonTypes(types)
+            self?.pokemonStatsLabel.textColor = color
+
+            for stat in pokemonDetail.stats {
+                switch stat.stat.name {
+                case "hp":
+                    self?.hpStatView.updateStat(baseValue: stat.baseStat,
+                                                maxValue: 255,
+                                                color: color)
+                case "attack":
+                    self?.attackStatView.updateStat(baseValue: stat.baseStat,
+                                                    maxValue: 181,
+                                                    color: color)
+                case "defense":
+                    self?.defenseStatView.updateStat(baseValue: stat.baseStat,
+                                                     maxValue: 230,
+                                                     color: color)
+                case "special-attack":
+                    self?.specialAttackStatView.updateStat(baseValue: stat.baseStat,
+                                                           maxValue: 180,
+                                                           color: color)
+                case "special-defense":
+                    self?.specialDefenseStatView.updateStat(baseValue: stat.baseStat,
+                                                            maxValue: 230,
+                                                            color: color)
+                case "speed":
+                    self?.speedStatView.updateStat(baseValue: stat.baseStat,
+                                                   maxValue: 200,
+                                                   color: color)
+                default:
+                    break
                 }
             }
         }

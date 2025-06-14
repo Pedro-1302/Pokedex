@@ -8,6 +8,7 @@
 import Foundation
 
 struct PokemonDetailDTO: Codable {
+    let id: Int
     let height: Int
     let name: String
     let sprites: Sprites
@@ -19,6 +20,7 @@ struct PokemonDetailDTO: Codable {
 extension PokemonDetailDTO {
     func toDomain() -> PokemonDetailResponse {
         return PokemonDetailResponse(
+            id: 84,
             height: height,
             name: name.capitalized,
             sprites: sprites,

@@ -8,6 +8,7 @@
 import UIKit
 
 struct PokemonDetailResponse: Codable {
+    let id: Int
     let height: Int
     let name: String
     let sprites: Sprites
@@ -27,6 +28,7 @@ struct PokemonDetailResponse: Codable {
 extension PokemonDetailResponse {
     static func createMock() -> PokemonDetailResponse {
         PokemonDetailResponse(
+            id: 84,
             height: 15,
             name: "gengar",
             sprites: .createMock(),

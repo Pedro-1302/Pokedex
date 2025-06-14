@@ -82,10 +82,8 @@ extension PokemonListVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: "PokemonCell",
-            for: indexPath
-        ) as? PokemonTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PokemonCell",
+                                                       for: indexPath) as? PokemonTableViewCell else {
             logger.error("Failed to dequeue PokemonTableViewCell.")
             return UITableViewCell()
         }
