@@ -1,10 +1,3 @@
-//
-//  UIImageView+setImage.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 13/06/25.
-//
-
 import UIKit
 
 extension UIImageView {
