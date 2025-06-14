@@ -1,10 +1,3 @@
-//
-//  PokemonType.swift
-//  Pokedex
-//
-//  Created by Pedro Franco on 09/06/25.
-//
-
 import Foundation
 
 struct PokemonType: Codable {
@@ -14,6 +7,7 @@ struct PokemonType: Codable {
 
 extension PokemonType {
     static func createMock() -> PokemonType {
-        PokemonType(name: .ghost, url: "https://pokeapi.co/api/v2/type/8/")
+        PokemonType(name: .ghost,
+                    url: "https://pokeapi.co/api/v2/type/8/")
     }
 }
