@@ -2,7 +2,16 @@ import UIKit
 
 final class PokemonListVC: UIViewController {
     private let service: PokemonServiceProtocol
-    private var pokemonList: [Pokemon] = []
+    private(set) var pokemonList: [Pokemon] = []
+    private(set) var filteredPokemonList: [Pokemon] = []
+
+    private let searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.placeholder = "Search by pokemon or dex number"
+        return searchController
+    }()
 
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -27,21 +36,30 @@ final class PokemonListVC: UIViewController {
         super.viewDidLoad()
         setTableViewAsRootView()
         configureNavigationBarTitle()
+        configureSearchController()
+        fetchPokemons()
+    }
+
+    func configureSearchController() {
+        self.searchController.searchResultsUpdater = self
+        self.navigationItem.searchController = searchController
+        self.definesPresentationContext = false
+        self.navigationItem.hidesSearchBarWhenScrolling = false
     }
 }
 
-// MARK: - Private Methods
-extension PokemonListVC {
-    private func setTableViewAsRootView() {
+// MARK: - Private Extension Methods
+private extension PokemonListVC {
+    func setTableViewAsRootView() {
         view = tableView
     }
 
-    private func configureNavigationBarTitle() {
+    func configureNavigationBarTitle() {
         navigationItem.title = "Pokedex"
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 
-    private func fetchPokemons() {
+    func fetchPokemons() {
         service.fetchPokemonList { [weak self] result in
             guard let self else { return }
             switch result {
@@ -69,16 +87,19 @@ extension PokemonListVC: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedPokemon = pokemonList[indexPath.row]
-        let detailVC = PokemonDetailVC(pokemonId: selectedPokemon.id)
-        navigationController?.pushViewController(detailVC, animated: true)
+        let index = indexPath.row
+        let inSearchMode = inSearchMode(searchController)
+        let selectedPokemon = inSearchMode ? filteredPokemonList[index] : pokemonList[index]
+        let detailVc = PokemonDetailVC(pokemonId: selectedPokemon.id)
+        navigationController?.pushViewController(detailVc, animated: true)
     }
 }
 
 // MARK: - UITableViewDataSource Methods
 extension PokemonListVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pokemonList.count
+        let inSearchMode = self.inSearchMode(searchController)
+        return inSearchMode ? filteredPokemonList.count : pokemonList.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -88,8 +109,39 @@ extension PokemonListVC: UITableViewDataSource {
             return UITableViewCell()
         }
 
-        let pokemon = pokemonList[indexPath.row]
+        let inSearchMode = self.inSearchMode(searchController)
+        let pokemon = inSearchMode ? filteredPokemonList[indexPath.row] : self.pokemonList[indexPath.row]
         cell.configure(pokemon)
         return cell
+    }
+}
+
+// MARK: - Search Controller Methods
+extension PokemonListVC: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchableText = searchController.searchBar.text
+        self.updateSearchController(text: searchableText)
+    }
+
+    func inSearchMode(_ searchController: UISearchController) -> Bool {
+        let isActive = searchController.isActive
+        let searchText = searchController.searchBar.text ?? ""
+        return isActive && !searchText.isEmpty
+    }
+
+    func updateSearchController(text: String?) {
+        filteredPokemonList = pokemonList
+
+        guard let searchText = text?.lowercased(), !searchText.isEmpty else {
+            return tableView.reloadData()
+        }
+
+        filteredPokemonList = filteredPokemonList.filter { pokemon in
+            let matchesName = pokemon.name.lowercased().contains(searchText)
+            let matchesId = String(pokemon.id).contains(searchText)
+            return matchesName || matchesId
+        }
+
+        tableView.reloadData()
     }
 }
