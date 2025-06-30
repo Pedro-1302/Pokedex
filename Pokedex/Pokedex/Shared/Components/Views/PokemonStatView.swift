@@ -52,9 +52,7 @@ final class PokemonStatView: UIStackView {
         baseStatLabel.text = "\(baseValue)"
         let progress = min(Float(baseValue) / maxValue, 1.0)
         progressView.setProgress(progress, animated: true)
-        if let color = color {
-            progressView.tintColor = color
-        }
+        progressView.progressTintColor = color
     }
 }
 

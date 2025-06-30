@@ -200,10 +200,12 @@ private extension PokemonDetailVC {
             self?.view.backgroundColor = color
             self?.pokemon = pokemonDetail
             self?.navigationItem.title = name
-            let headerInfo = PokemonHeaderInfo(name: name,
-                                               dexId: id,
-                                               imageURL: url,
-                                               types: types)
+            let headerInfo = PokemonHeaderInfo(
+                name: name,
+                dexId: id,
+                imageURL: url,
+                types: types
+            )
             self?.headerView.configure(with: headerInfo)
             self?.pokemonStatsLabel.textColor = color
             for stat in pokemonDetail.stats {
