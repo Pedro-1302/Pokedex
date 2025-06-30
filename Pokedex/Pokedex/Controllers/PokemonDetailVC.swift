@@ -2,7 +2,6 @@ import UIKit
 
 final class PokemonDetailVC: UIViewController {
     private let service: PokemonServiceProtocol
-
     private let headerView = PokemonHeaderView()
 
     private let cardView: UIView = {
@@ -40,7 +39,10 @@ final class PokemonDetailVC: UIViewController {
 
     private var pokemon: PokemonDetailResponse = .createMock()
 
-    init(pokemonId: Int, service: PokemonServiceProtocol = PokemonService()) {
+    init(
+        pokemonId: Int,
+        service: PokemonServiceProtocol = PokemonService()
+    ) {
         self.pokemonId = pokemonId
         self.service = service
         super.init(nibName: nil, bundle: nil)
@@ -52,7 +54,7 @@ final class PokemonDetailVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureNavigationBar()
+        setNavigationBarStyle(displayMode: .never, prefersLargeTitles: false)
         configureBlur()
         configureHeaderStackView()
         configureCardView()
@@ -65,18 +67,18 @@ final class PokemonDetailVC: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationItem.largeTitleDisplayMode = .always
-        navigationController?.navigationBar.prefersLargeTitles = true
+        setNavigationBarStyle(displayMode: .always, prefersLargeTitles: true)
     }
 }
 
-extension PokemonDetailVC {
-    private func configureNavigationBar() {
+// MARK: - Private Extension Methods
+private extension PokemonDetailVC {
+    func setNavigationBarStyle(displayMode: UINavigationItem.LargeTitleDisplayMode, prefersLargeTitles: Bool) {
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.prefersLargeTitles = false
     }
 
-    private func configureBlur() {
+    func configureBlur() {
         view.addSubview(blurBackgroundView)
         NSLayoutConstraint.activate([
             blurBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -86,7 +88,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureHeaderStackView() {
+    func configureHeaderStackView() {
         view.addSubview(headerView)
 
         NSLayoutConstraint.activate([
@@ -97,7 +99,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureCardView() {
+    func configureCardView() {
         view.addSubview(cardView)
         NSLayoutConstraint.activate([
             cardView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 16),
@@ -114,7 +116,7 @@ extension PokemonDetailVC {
         configureSpeedStatView()
     }
 
-    private func configurePokemonStatsLabel() {
+    func configurePokemonStatsLabel() {
         cardView.addSubview(pokemonStatsLabel)
         NSLayoutConstraint.activate([
             pokemonStatsLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 32),
@@ -123,7 +125,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureHpStatView() {
+    func configureHpStatView() {
         cardView.addSubview(hpStatView)
         NSLayoutConstraint.activate([
             hpStatView.topAnchor.constraint(equalTo: pokemonStatsLabel.bottomAnchor, constant: 16),
@@ -132,7 +134,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureAttackStatView() {
+    func configureAttackStatView() {
         cardView.addSubview(attackStatView)
         NSLayoutConstraint.activate([
             attackStatView.topAnchor.constraint(equalTo: hpStatView.bottomAnchor, constant: 16),
@@ -141,7 +143,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureDefenseStatView() {
+    func configureDefenseStatView() {
         cardView.addSubview(defenseStatView)
         NSLayoutConstraint.activate([
             defenseStatView.topAnchor.constraint(equalTo: attackStatView.bottomAnchor, constant: 16),
@@ -150,7 +152,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureSpecialAttackStatView() {
+    func configureSpecialAttackStatView() {
         cardView.addSubview(specialAttackStatView)
         NSLayoutConstraint.activate([
             specialAttackStatView.topAnchor.constraint(equalTo: defenseStatView.bottomAnchor, constant: 16),
@@ -159,7 +161,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureSpecialDefenseStatView() {
+    func configureSpecialDefenseStatView() {
         cardView.addSubview(specialDefenseStatView)
         NSLayoutConstraint.activate([
             specialDefenseStatView.topAnchor.constraint(equalTo: specialAttackStatView.bottomAnchor, constant: 16),
@@ -168,7 +170,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func configureSpeedStatView() {
+    func configureSpeedStatView() {
         cardView.addSubview(speedStatView)
         NSLayoutConstraint.activate([
             speedStatView.topAnchor.constraint(equalTo: specialDefenseStatView.bottomAnchor, constant: 16),
@@ -177,7 +179,7 @@ extension PokemonDetailVC {
         ])
     }
 
-    private func fetchPokemon() {
+    func fetchPokemon() {
         service.fetchPokemonDetail(pokemonId: pokemonId) { [weak self] result in
             switch result {
             case .success(let pokemonDetail):
@@ -188,7 +190,7 @@ extension PokemonDetailVC {
         }
     }
 
-    private func setupViews(_ pokemonDetail: PokemonDetailResponse) {
+    func setupViews(_ pokemonDetail: PokemonDetailResponse) {
         DispatchQueue.main.async { [weak self] in
             let id = pokemonDetail.id
             let types = pokemonDetail.types.compactMap { $0.type.name }
@@ -207,29 +209,41 @@ extension PokemonDetailVC {
             for stat in pokemonDetail.stats {
                 switch stat.stat.name {
                 case .hp:
-                    self?.hpStatView.updateStat(baseValue: stat.baseStat,
-                                                maxValue: 255,
-                                                color: color)
+                    self?.hpStatView.updateStat(
+                        baseValue: stat.baseStat,
+                        maxValue: 255,
+                        color: color
+                    )
                 case .attack:
-                    self?.attackStatView.updateStat(baseValue: stat.baseStat,
-                                                    maxValue: 181,
-                                                    color: color)
+                    self?.attackStatView.updateStat(
+                        baseValue: stat.baseStat,
+                        maxValue: 181,
+                        color: color
+                    )
                 case .defense:
-                    self?.defenseStatView.updateStat(baseValue: stat.baseStat,
-                                                     maxValue: 230,
-                                                     color: color)
+                    self?.defenseStatView.updateStat(
+                        baseValue: stat.baseStat,
+                        maxValue: 230,
+                        color: color
+                    )
                 case .specialAttack:
-                    self?.specialAttackStatView.updateStat(baseValue: stat.baseStat,
-                                                           maxValue: 180,
-                                                           color: color)
+                    self?.specialAttackStatView.updateStat(
+                        baseValue: stat.baseStat,
+                        maxValue: 180,
+                        color: color
+                    )
                 case .specialDefense:
-                    self?.specialDefenseStatView.updateStat(baseValue: stat.baseStat,
-                                                            maxValue: 230,
-                                                            color: color)
+                    self?.specialDefenseStatView.updateStat(
+                        baseValue: stat.baseStat,
+                        maxValue: 230,
+                        color: color
+                    )
                 case .speed:
-                    self?.speedStatView.updateStat(baseValue: stat.baseStat,
-                                                   maxValue: 200,
-                                                   color: color)
+                    self?.speedStatView.updateStat(
+                        baseValue: stat.baseStat,
+                        maxValue: 200,
+                        color: color
+                    )
                 }
             }
         }
