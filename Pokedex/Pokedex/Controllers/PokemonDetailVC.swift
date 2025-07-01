@@ -28,6 +28,8 @@ final class PokemonDetailVC: UIViewController {
         return label
     }()
 
+    private let loadingView = LoadingView()
+
     private let hpStatView = PokemonStatView(title: "HP", maxValue: "255")
     private let attackStatView = PokemonStatView(title: "Attack", maxValue: "181")
     private let defenseStatView = PokemonStatView(title: "Defense", maxValue: "230")
@@ -179,11 +181,22 @@ private extension PokemonDetailVC {
         ])
     }
 
+    func startLoading() {
+        loadingView.show(in: view)
+    }
+
+    func stopLoading() {
+        loadingView.hide()
+    }
+
     func fetchPokemon() {
+        startLoading()
         service.fetchPokemonDetail(pokemonId: pokemonId) { [weak self] result in
+            guard let self else { return }
+            self.stopLoading()
             switch result {
             case .success(let pokemonDetail):
-                self?.setupViews(pokemonDetail)
+                self.setupViews(pokemonDetail)
             case .failure(let error):
                 logger.error("An error occurred: \(error)")
             }
@@ -192,61 +205,67 @@ private extension PokemonDetailVC {
 
     func setupViews(_ pokemonDetail: PokemonDetailResponse) {
         DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
             let id = pokemonDetail.id
             let types = pokemonDetail.types.compactMap { $0.type.name }
             let name = pokemonDetail.name
             let url = pokemonDetail.sprites.other.showdown.frontDefault
             let color = pokemonDetail.types.map { $0.type.name.color }.first
-            self?.view.backgroundColor = color
-            self?.pokemon = pokemonDetail
-            self?.navigationItem.title = name
+            let stats = pokemonDetail.stats
+            self.view.backgroundColor = color
+            self.pokemon = pokemonDetail
+            self.navigationItem.title = name
             let headerInfo = PokemonHeaderInfo(
                 name: name,
                 dexId: id,
                 imageURL: url,
                 types: types
             )
-            self?.headerView.configure(with: headerInfo)
-            self?.pokemonStatsLabel.textColor = color
-            for stat in pokemonDetail.stats {
-                switch stat.stat.name {
-                case .hp:
-                    self?.hpStatView.updateStat(
-                        baseValue: stat.baseStat,
-                        maxValue: 255,
-                        color: color
-                    )
-                case .attack:
-                    self?.attackStatView.updateStat(
-                        baseValue: stat.baseStat,
-                        maxValue: 181,
-                        color: color
-                    )
-                case .defense:
-                    self?.defenseStatView.updateStat(
-                        baseValue: stat.baseStat,
-                        maxValue: 230,
-                        color: color
-                    )
-                case .specialAttack:
-                    self?.specialAttackStatView.updateStat(
-                        baseValue: stat.baseStat,
-                        maxValue: 180,
-                        color: color
-                    )
-                case .specialDefense:
-                    self?.specialDefenseStatView.updateStat(
-                        baseValue: stat.baseStat,
-                        maxValue: 230,
-                        color: color
-                    )
-                case .speed:
-                    self?.speedStatView.updateStat(
-                        baseValue: stat.baseStat,
-                        maxValue: 200,
-                        color: color
-                    )
-                }
+            self.headerView.configure(with: headerInfo)
+            self.pokemonStatsLabel.textColor = color
+            self.setupPokemonStats(stats, color: color)
+        }
+    }
+
+    func setupPokemonStats(_ stats: [PokemonStatSlot], color: UIColor?) {
+        for stat in stats {
+            switch stat.stat.name {
+            case .hp:
+                hpStatView.updateStat(
+                    baseValue: stat.baseStat,
+                    maxValue: 255,
+                    color: color
+                )
+            case .attack:
+                attackStatView.updateStat(
+                    baseValue: stat.baseStat,
+                    maxValue: 181,
+                    color: color
+                )
+            case .defense:
+                defenseStatView.updateStat(
+                    baseValue: stat.baseStat,
+                    maxValue: 230,
+                    color: color
+                )
+            case .specialAttack:
+                specialAttackStatView.updateStat(
+                    baseValue: stat.baseStat,
+                    maxValue: 180,
+                    color: color
+                )
+            case .specialDefense:
+                specialDefenseStatView.updateStat(
+                    baseValue: stat.baseStat,
+                    maxValue: 230,
+                    color: color
+                )
+            case .speed:
+                speedStatView.updateStat(
+                    baseValue: stat.baseStat,
+                    maxValue: 200,
+                    color: color
+                )
             }
         }
     }

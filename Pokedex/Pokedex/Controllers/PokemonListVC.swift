@@ -4,6 +4,7 @@ final class PokemonListVC: UIViewController {
     private let service: PokemonServiceProtocol
     private(set) var pokemonList: [Pokemon] = []
     private(set) var filteredPokemonList: [Pokemon] = []
+    private(set) var pokemonCount: Int = 0
 
     private let searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -23,6 +24,8 @@ final class PokemonListVC: UIViewController {
         return tableView
     }()
 
+    private let loadingView = LoadingView()
+
     init(service: PokemonServiceProtocol = PokemonService()) {
         self.service = service
         super.init(nibName: nil, bundle: nil)
@@ -34,22 +37,26 @@ final class PokemonListVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureSearchBar()
         setTableViewAsRootView()
         configureNavigationBarTitle()
-        configureSearchController()
-        fetchPokemons()
     }
 
-    func configureSearchController() {
-        self.searchController.searchResultsUpdater = self
-        self.navigationItem.searchController = searchController
-        self.definesPresentationContext = false
-        self.navigationItem.hidesSearchBarWhenScrolling = false
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchPokemons()
     }
 }
 
 // MARK: - Private Extension Methods
 private extension PokemonListVC {
+    func configureSearchBar() {
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
+        definesPresentationContext = false
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+
     func setTableViewAsRootView() {
         view = tableView
     }
@@ -60,18 +67,29 @@ private extension PokemonListVC {
     }
 
     func fetchPokemons() {
+        self.startLoading()
         service.fetchPokemonList { [weak self] result in
             guard let self else { return }
+            self.stopLoading()
             switch result {
             case .success(let pokemons):
                 DispatchQueue.main.async {
                     self.pokemonList.append(contentsOf: pokemons)
+                    self.pokemonCount = self.service.totalCount ?? 0
                     self.tableView.reloadData()
                 }
             case .failure(let error):
                 logger.error("An error occurred: \(error)")
             }
         }
+    }
+
+    func startLoading() {
+        loadingView.show(in: view)
+    }
+
+    func stopLoading() {
+        loadingView.hide()
     }
 }
 

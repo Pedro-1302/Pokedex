@@ -1,16 +1,19 @@
 import Foundation
 
 protocol PokemonServiceProtocol {
+    var totalCount: Int? { get }
+    var limitPerPage: Int { get }
     func fetchPokemonList(completion: @escaping (Result<[Pokemon], Error>) -> Void)
-    func fetchPokemonDetail(pokemonId: Int,
-                            completion: @escaping (Result<PokemonDetailResponse, Error>) -> Void)
+    func fetchPokemonDetail(pokemonId: Int, completion: @escaping (Result<PokemonDetailResponse, Error>) -> Void)
 }
 
 final class PokemonService: PokemonServiceProtocol {
     private let baseUrl: String = "https://pokeapi.co/api/v2/pokemon"
-    private let limitPerPage: Int = 20
     private var nextPageUrl: String?
     private var isFetching: Bool = false
+
+    private(set) var limitPerPage: Int = 20
+    private(set) var totalCount: Int?
 
     func fetchPokemonList(completion: @escaping (Result<[Pokemon], Error>) -> Void) {
         guard !isFetching else { return }
@@ -42,6 +45,7 @@ final class PokemonService: PokemonServiceProtocol {
             do {
                 let decoded = try JSONDecoder().decode(PokemonListResponse.self, from: data)
                 self.nextPageUrl = decoded.next
+                if self.totalCount != nil { self.totalCount = decoded.count }
                 let pokemons = decoded.results.map { $0.toPokemon() }
                 completion(.success(pokemons))
             } catch {
@@ -51,8 +55,10 @@ final class PokemonService: PokemonServiceProtocol {
         }.resume()
     }
 
-    func fetchPokemonDetail(pokemonId: Int,
-                            completion: @escaping (Result<PokemonDetailResponse, Error>) -> Void) {
+    func fetchPokemonDetail(
+        pokemonId: Int,
+        completion: @escaping (Result<PokemonDetailResponse, Error>) -> Void
+    ) {
         let urlString = baseUrl + "/\(pokemonId)"
 
         guard let urlRequest = URL(string: urlString) else {
