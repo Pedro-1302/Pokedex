@@ -3,8 +3,8 @@ import UIKit
 final class PokemonStatView: UIStackView {
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
-        label.textColor = .black
+        label.font = .systemFont(ofSize: 17, weight: .semibold)
+        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         label.widthAnchor.constraint(equalToConstant: 150).isActive = true
         return label
@@ -13,7 +13,7 @@ final class PokemonStatView: UIStackView {
     private let baseStatLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17)
-        label.textColor = .darkGray
+        label.textColor = .lightGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -31,7 +31,7 @@ final class PokemonStatView: UIStackView {
     private let maxStatLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17)
-        label.textColor = .darkGray
+        label.textColor = .lightGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

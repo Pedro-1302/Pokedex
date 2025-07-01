@@ -24,6 +24,7 @@ final class PokemonTableViewCell: UITableViewCell {
 // MARK: - Private Methods
 extension PokemonTableViewCell {
     private func setupCell() {
+        self.selectionStyle = .none
         contentView.addSubview(pokemonCell)
         NSLayoutConstraint.activate([
             pokemonCell.topAnchor.constraint(equalTo: contentView.topAnchor),

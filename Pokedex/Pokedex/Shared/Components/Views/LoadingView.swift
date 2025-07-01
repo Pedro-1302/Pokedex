@@ -43,7 +43,7 @@ final class LoadingView: UIView {
 
 private extension LoadingView {
     func setupView() {
-        backgroundColor = UIColor(white: 0, alpha: 0.3)
+        backgroundColor = .secondarySystemBackground
         configureSpinner()
     }
 

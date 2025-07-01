@@ -39,12 +39,12 @@ final class PokemonListVC: UIViewController {
         super.viewDidLoad()
         configureSearchBar()
         setTableViewAsRootView()
-        configureNavigationBarTitle()
+        fetchPokemons()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchPokemons()
+        configureNavigationBarTitle()
     }
 }
 
@@ -58,7 +58,13 @@ private extension PokemonListVC {
     }
 
     func setTableViewAsRootView() {
-        view = tableView
+        view.addSubview(tableView)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
 
     func configureNavigationBarTitle() {
@@ -121,8 +127,10 @@ extension PokemonListVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PokemonCell",
-                                                       for: indexPath) as? PokemonTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "PokemonCell",
+            for: indexPath
+        ) as? PokemonTableViewCell else {
             logger.error("Failed to dequeue PokemonTableViewCell.")
             return UITableViewCell()
         }
@@ -148,13 +156,13 @@ extension PokemonListVC: UISearchResultsUpdating {
     }
 
     func updateSearchController(text: String?) {
-        filteredPokemonList = pokemonList
-
         guard let searchText = text?.lowercased(), !searchText.isEmpty else {
-            return tableView.reloadData()
+            filteredPokemonList = []
+            tableView.reloadData()
+            return
         }
 
-        filteredPokemonList = filteredPokemonList.filter { pokemon in
+        filteredPokemonList = pokemonList.filter { pokemon in
             let matchesName = pokemon.name.lowercased().contains(searchText)
             let matchesId = String(pokemon.id).contains(searchText)
             return matchesName || matchesId
